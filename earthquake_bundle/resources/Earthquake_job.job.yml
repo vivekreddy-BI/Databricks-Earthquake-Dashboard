@@ -1,0 +1,30 @@
+resources:
+  jobs:
+    Earthquake_Job:
+      name: Earthquake_Job
+      tasks:
+        - task_key: Bronze_Ingestion
+          notebook_task:
+            notebook_path: ../src/Notebooks/Ingestion_Bronze.ipynb
+            base_parameters:
+              catalog_name: dev
+            source: WORKSPACE
+        - task_key: Bronze_Silver
+          depends_on:
+            - task_key: Bronze_Ingestion
+          pipeline_task:
+            pipeline_id: ${resources.pipelines.Bronze_Silver_Earthquake_etl.id}
+            full_refresh: false
+        - task_key: Earthquake_Dashboard
+          depends_on:
+            - task_key: Bronze_Silver
+          dashboard_task:
+            subscription: {}
+            warehouse_id: bdb6653a167a60ce
+            dashboard_id: ${resources.dashboards.earthquake_monitor.id}
+      queue:
+        enabled: true
+      parameters:
+        - name: catalog_name
+          default: ${var.catalog}
+      performance_target: PERFORMANCE_OPTIMIZED

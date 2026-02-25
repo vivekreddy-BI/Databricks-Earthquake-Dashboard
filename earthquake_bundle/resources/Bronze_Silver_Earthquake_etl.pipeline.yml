@@ -1,0 +1,18 @@
+# The main pipeline for earthquake_bundle
+
+resources:
+  pipelines:
+    Bronze_Silver_Earthquake_etl:
+      name: Bronze_Silver
+      configuration:
+        catalog_name: ${var.catalog}
+      libraries:
+        - glob:
+            include: ../src/DLT_Pipelines/Bronze_silver/transformations/**
+      schema: silver
+      photon: true
+      catalog: ${var.catalog}
+      serverless: true
+      root_path: ../src/DLT_Pipelines/Bronze_silver
+
+
